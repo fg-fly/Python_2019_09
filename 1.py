@@ -102,7 +102,7 @@ import docx
 # file.save('example4.docx')
 
 
-
+from  copy import *
 
 def iter_block_items(parent):
     """
@@ -130,17 +130,44 @@ doc = docx.Document('1.docx')
 # print(iter_block_items(doc))
 obj      =   [block for block in iter_block_items(doc)]
 
-
+print(obj[0][1])
 n=1
+
+
+def copy_table_after(table, paragraph):
+    tbl, p = table._tbl, paragraph._p
+    new_tbl = deepcopy(tbl)
+
+    p.addnext(new_tbl)
+    p.addnext(new_tbl)
+
 
 for block in iter_block_items(doc):
     # print(block[0])
     try:
-        print(str(n),block[0].text)
-    except:
+        if block[0].text.lower().startswith('test'):
+            # print(str(n),block[0].text)
+            table_before_n = 0
+            for i in range(n,-1,-1):
+                # print(obj[i][1])
+                if obj[i][1]  == 0:
+                    print('dasdasd',str(i))
+                    table_before_n = i
+                    break
+            table_to_copy = obj[table_before_n][0]
+
+            copy_table_after(table_to_copy, block[0])
+            block[0].text = '1' + block[0].text
+            new_p=block[0].insert_paragraph_before ('end_of_table')
+            new_p.runs[0].add_break(docx.enum.text.WD_BREAK.PAGE)
+
+        # print(str(n),block[0].text)
+    except Exception as e:
+        # raise
+        print(e)
         print(str(n),len(block[0].rows))
     n=n+1
 
 
-
+doc.save('2.docx')
 
